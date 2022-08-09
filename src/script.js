@@ -52,6 +52,39 @@ let cat;
  	console.error( error );
  } );
 
+// DARK CAT
+
+let mixer2;
+let cat2;
+ gltfloader.load( '/dark_cat/scene.gltf', function ( gltf ) {
+ 	scene.add( gltf.scene );
+    cat2 = gltf.scene;
+    // Animation - Walk
+    mixer2 = new THREE.AnimationMixer(cat2);
+    const clips = gltf.animations;
+    const clip = THREE.AnimationClip.findByName(clips, 'Cat_Idle|Scratch')
+    const action = mixer2.clipAction(clip)
+    action.play()
+
+    cat2.scale.set(.1,.1,.1)
+    cat2.position.x = 0.7987
+    cat2.position.y = 0.2693
+    cat2.position.z = 0.6663
+    cat2.rotation.x = 0.6002
+    cat2.rotation.y =-1.9895
+    
+    const cat2GUI = gui.addFolder('Dark Cat');
+    cat2GUI.add(cat2.position, 'x').min(-3).max(3).step(0.00001)
+    cat2GUI.add(cat2.position, 'y').min(-3).max(3).step(0.00001)
+    cat2GUI.add(cat2.position, 'z').min(-3).max(3).step(0.00001)
+    cat2GUI.add(cat2.rotation, 'x').min(-3).max(3).step(0.00001)
+    cat2GUI.add(cat2.rotation, 'y').min(-3).max(3).step(0.00001)
+    
+
+ }, undefined, function ( error ) {
+ 	console.error( error );
+ } );
+
 // TOTEM
 let totem;
 gltfloader.load( '/totem/scene.gltf', function ( gltf ) {
@@ -77,7 +110,57 @@ gltfloader.load( '/totem/scene.gltf', function ( gltf ) {
     console.error( error );
 } );
 
- // PLANE
+// SPHERE
+let sphere;
+gltfloader.load( '/sphere/scene.gltf', function ( gltf ) {
+    scene.add( gltf.scene );
+   sphere = gltf.scene;
+   
+   sphere.scale.set(.2,.2,.2)
+   sphere.position.x = 0.9972
+   sphere.position.y = -0.1276
+   sphere.position.z = 3
+   sphere.rotation.x = 0.137
+   sphere.rotation.y = 3
+   
+   const sphereGUI = gui.addFolder('Sphere');
+   sphereGUI.add(sphere.position, 'x').min(-3).max(3).step(0.00001)
+   sphereGUI.add(sphere.position, 'y').min(-3).max(3).step(0.00001)
+   sphereGUI.add(sphere.position, 'z').min(-3).max(3).step(0.00001)
+   sphereGUI.add(sphere.rotation, 'x').min(-3).max(3).step(0.00001)
+   sphereGUI.add(sphere.rotation, 'y').min(-3).max(3).step(0.00001)
+   
+
+}, undefined, function ( error ) {
+    console.error( error );
+} );
+
+// CITY
+let city;
+gltfloader.load( '/city/scene.gltf', function ( gltf ) {
+    scene.add( gltf.scene );
+   city = gltf.scene;
+   
+   city.scale.set(.0001,.0001,.0001)
+   city.position.x = 3
+   city.position.y = -1.78
+   city.position.z = 3
+   city.rotation.x = 0.137
+   city.rotation.y = 3
+   
+   const cityGUI = gui.addFolder('City');
+   cityGUI.add(city.position, 'x').min(-3).max(3).step(0.00001)
+   cityGUI.add(city.position, 'y').min(-3).max(3).step(0.00001)
+   cityGUI.add(city.position, 'z').min(-3).max(3).step(0.00001)
+   cityGUI.add(city.rotation, 'x').min(-3).max(3).step(0.00001)
+   cityGUI.add(city.rotation, 'y').min(-3).max(3).step(0.00001)
+   
+
+}, undefined, function ( error ) {
+    console.error( error );
+} );
+
+// PLANE
 const geometry = new THREE.PlaneBufferGeometry(3, 5, 64, 64)
 
 const material = new THREE.MeshStandardMaterial({
@@ -204,8 +287,9 @@ const tick = () =>
 
     // Update Orbital Controls
     // controls.update()
-    if(mixer) {
+    if(mixer && mixer2) {
         mixer.update(0.01)
+        mixer2.update(0.01)
         
         
     }
