@@ -4,36 +4,82 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-// Loader
-
+// ///////////////////// LOADERS ///////////////////////////////
 const loader = new THREE.TextureLoader()
-const texture = loader.load('/textures/wireframe.png')
+const texture = loader.load('/textures/wireframe2.jpg')
 const height = loader.load('/textures/height.png')
 const alpha = loader.load('/textures/alpha.jpg')
 
 const gltfloader = new GLTFLoader();
 
-
-// Debug
 const gui = new dat.GUI()
 
-// Canvas
 const canvas = document.querySelector('canvas.webgl')
 
-// Scene
 const scene = new THREE.Scene()
 
-// Objects
+// ///////////////////// OBJECTS ///////////////////////////////
 
-// Cat
-// gltfloader.load( '/cat/scene.gltf', function ( gltf ) {
-// 	scene.add( gltf.scene );
-// }, undefined, function ( error ) {
-// 	console.error( error );
-// } );
-const geometry = new THREE.PlaneBufferGeometry(3, 3, 64, 64)
+// CAT
+let mixer;
+let cat;
+ gltfloader.load( '/cat/scene.gltf', function ( gltf ) {
+ 	scene.add( gltf.scene );
+    cat = gltf.scene;
+    // Animation - Walk
+    mixer = new THREE.AnimationMixer(cat);
+    const clips = gltf.animations;
+    const clip = THREE.AnimationClip.findByName(clips, 'A_walk')
+    const action = mixer.clipAction(clip)
+    action.play()
 
-// Materials
+    cat.scale.set(.1,.1,.1)
+    cat.position.x = 0.137
+    cat.position.y = 0.534
+    cat.position.z = -1.1202
+    cat.rotation.x = 0.4
+    cat.rotation.y =-0.127
+    
+    const catGUI = gui.addFolder('Cat');
+    catGUI.add(cat.position, 'x').min(-3).max(3).step(0.00001)
+    catGUI.add(cat.position, 'y').min(-3).max(3).step(0.00001)
+    catGUI.add(cat.position, 'z').min(-3).max(3).step(0.00001)
+    catGUI.add(cat.rotation, 'x').min(-3).max(3).step(0.00001)
+    catGUI.add(cat.rotation, 'y').min(-3).max(3).step(0.00001)
+    
+
+ }, undefined, function ( error ) {
+ 	console.error( error );
+ } );
+
+// TOTEM
+let totem;
+gltfloader.load( '/totem/scene.gltf', function ( gltf ) {
+    scene.add( gltf.scene );
+   totem = gltf.scene;
+   
+   totem.scale.set(.2,.2,.2)
+   totem.position.x = 0.2031
+   totem.position.y = -0.0634
+   totem.position.z = 0.4678
+   totem.rotation.x = 0.4
+   totem.rotation.y = 3
+   
+   const totemGUI = gui.addFolder('Totem');
+   totemGUI.add(totem.position, 'x').min(-3).max(3).step(0.00001)
+   totemGUI.add(totem.position, 'y').min(-3).max(3).step(0.00001)
+   totemGUI.add(totem.position, 'z').min(-3).max(3).step(0.00001)
+   totemGUI.add(totem.rotation, 'x').min(-3).max(3).step(0.00001)
+   totemGUI.add(totem.rotation, 'y').min(-3).max(3).step(0.00001)
+   
+
+}, undefined, function ( error ) {
+    console.error( error );
+} );
+
+ // PLANE
+const geometry = new THREE.PlaneBufferGeometry(3, 5, 64, 64)
+
 const material = new THREE.MeshStandardMaterial({
     color: 'gray',
     map: texture,
@@ -41,37 +87,55 @@ const material = new THREE.MeshStandardMaterial({
     displacementScale: .5,
     alphaMap: alpha,
     transparent: true,
-    depthTest: false
+    depthTest: true
 })
 
 const plane = new THREE.Mesh(geometry, material)
 scene.add(plane)
 plane.rotation.x = 181
 
-gui.add(plane.rotation, 'x').min(0).max(300)
-// Mesh
+const planeGUI = gui.addFolder('Plane');
+planeGUI.add(plane.rotation, 'x').min(-3).max(3).step(0.00001)
+planeGUI.add(plane.rotation, 'y').min(-3).max(3).step(0.00001)
+planeGUI.add(plane.position, 'x').min(-3).max(3).step(0.00001)
+planeGUI.add(plane.position, 'y').min(-3).max(3).step(0.00001)
 
-// Lights
+// SKYBOX
+const skyboxLoader = new THREE.CubeTextureLoader();
+    const skybox = skyboxLoader.load([
+        '/textures/right.png',
+        '/textures/left.png',
+        '/textures/top.png',
+        '/textures/bottom.png',
+        '/textures/front.png',
+        '/textures/back.png',
+    ]);
+    scene.background = skybox;
 
-const pointLight = new THREE.PointLight(0xff4d71, 3)
+// ///////////////////// LIGHTS ///////////////////////////////
+const pointLight = new THREE.PointLight(0xf587bb, 3)
 pointLight.position.x = .2
 pointLight.position.y = 10
 pointLight.position.z = 4.4
 scene.add(pointLight)
 
-gui.add(pointLight.position, 'y').min(-3).max(3).step(0.01)
-gui.add(pointLight.position, 'x').min(-6).max(10).step(0.01)
-gui.add(pointLight.position, 'z').min(-3).max(3).step(0.01)
-gui.add(pointLight, 'intensity').min(0).max(10).step(0.01)
+const lightGUI = gui.addFolder('Light');
+lightGUI.add(pointLight.position, 'y').min(-3).max(3).step(0.01)
+lightGUI.add(pointLight.position, 'x').min(-6).max(10).step(0.01)
+lightGUI.add(pointLight.position, 'z').min(-3).max(3).step(0.01)
+lightGUI.add(pointLight, 'intensity').min(0).max(10).step(0.01)
 
 const lightColor = {
-    color: 0xd71948
+    color: 0xf587bb
 }
 
-gui.addColor(lightColor, 'color')
+lightGUI.addColor(lightColor, 'color')
     .onChange(()=> {
         pointLight.color.set(lightColor.color)
     })
+
+const light2 = new THREE.AmbientLight(0x101010);
+scene.add(light2);
 
 /**
  * Sizes
@@ -96,23 +160,21 @@ window.addEventListener('resize', () =>
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
-/**
- * Camera
- */
+// ///////////////////// CAMERA ///////////////////////////////
 // Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 0
-camera.position.y = 0
-camera.position.z = -2
-scene.add(camera)
+    const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+    camera.position.x = 0
+    camera.position.y = 0
+    camera.position.z = -2
+
+        
+    scene.add(camera)
 
 // Controls
-// const controls = new OrbitControls(camera, canvas)
-// controls.enableDamping = true
+ const controls = new OrbitControls(camera, canvas)
+ controls.enableDamping = true
 
-/**
- * Renderer
- */
+// ///////////////////// RENDERER ///////////////////////////////
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     alpha: true
@@ -120,9 +182,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
-/**
- * Animate
- */
+// ///////////////////// ANIMATE ///////////////////////////////
  const scrollMap = (event) => {
     camera.position.z = window.scrollY / 20
     
@@ -144,7 +204,11 @@ const tick = () =>
 
     // Update Orbital Controls
     // controls.update()
-
+    if(mixer) {
+        mixer.update(0.01)
+        
+        
+    }
     // Render
     renderer.render(scene, camera)
 
@@ -153,4 +217,3 @@ const tick = () =>
 }
 
 tick()
-
