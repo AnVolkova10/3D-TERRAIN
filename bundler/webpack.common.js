@@ -5,8 +5,8 @@ const path = require('path')
 
 module.exports = {
     performance: {
-        maxEntrypointSize: 512000,
-        maxAssetSize: 512000
+        maxEntrypointSize: 9512000,
+        maxAssetSize: 9512000
    },
     entry: path.resolve(__dirname, '../src/script.js'),
     output:
