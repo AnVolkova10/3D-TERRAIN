@@ -24,16 +24,22 @@ const scene = new THREE.Scene()
 
 // CAT
 let mixer;
+let mixer3;
 let cat;
  gltfloader.load( '/cat/scene.gltf', function ( gltf ) {
  	scene.add( gltf.scene );
     cat = gltf.scene;
     // Animation - Walk
     mixer = new THREE.AnimationMixer(cat);
+    mixer3 = new THREE.AnimationMixer(cat);
     const clips = gltf.animations;
     const clip = THREE.AnimationClip.findByName(clips, 'A_walk')
+    const clip2 = THREE.AnimationClip.findByName(clips, 'A_idle')
     const action = mixer.clipAction(clip)
+    const action2 = mixer3.clipAction(clip2)
     action.play()
+    action2.play()
+
 
     cat.scale.set(.1,.1,.1)
     cat.position.x = 0.137
@@ -307,13 +313,19 @@ const tick = () =>
     controls.update()
     if(mixer && mixer2) {
         mixer.update(0.01)
-        mixer2.update(0.01)
         sphere.rotation.y = .5 * elapsedTime
-    
+        
         sphere.rotation.y += .45 * (targetX - sphere.rotation.y)
         sphere.rotation.x += .05 * (targetY - sphere.rotation.x)
         sphere.position.z += -.05 * (targetY - sphere.rotation.x)
         cat.position.z += -.09 * (targetY - sphere.rotation.x)
+        
+        if (cat.position.z >= -0.3){
+            mixer2.update(0.01)
+            totem.rotation.y += -.05
+            mixer3.update(0.01)
+        }
+
         
         
     }
