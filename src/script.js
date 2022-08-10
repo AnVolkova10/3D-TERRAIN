@@ -63,16 +63,26 @@ let cat;
 // DARK CAT
 
 let mixer2;
+let mixer4;
+let mixer5;
 let cat2;
  gltfloader.load( '/dark_cat/scene.gltf', function ( gltf ) {
  	scene.add( gltf.scene );
     cat2 = gltf.scene;
     // Animation - Walk
     mixer2 = new THREE.AnimationMixer(cat2);
+    mixer4 = new THREE.AnimationMixer(cat2);
+    mixer5 = new THREE.AnimationMixer(cat2);
     const clips = gltf.animations;
     const clip = THREE.AnimationClip.findByName(clips, 'Cat_Idle|Scratch')
+    const clip4= THREE.AnimationClip.findByName(clips, 'Cat_Idle|Idle')
+    const clip5= THREE.AnimationClip.findByName(clips, 'Cat_Idle|Jump')
     const action = mixer2.clipAction(clip)
+    const action4 = mixer4.clipAction(clip4)
+    const action5 = mixer5.clipAction(clip5)
     action.play()
+    action4.play()
+    action5.play()
 
     cat2.scale.set(.1,.1,.1)
     cat2.position.x = 0.7987
@@ -324,6 +334,10 @@ const tick = () =>
             mixer2.update(0.01)
             totem.rotation.y += -.05
             mixer3.update(0.01)
+        } else if (cat.position.z >= -1.5) {
+            mixer4.update(0.01)
+        } else {
+            mixer5.update(0.01)
         }
 
         
