@@ -12,6 +12,8 @@ const alpha = loader.load('/textures/alpha.jpg')
 
 const gltfloader = new GLTFLoader();
 
+
+
 const gui = new dat.GUI()
 
 const canvas = document.querySelector('canvas.webgl')
@@ -219,6 +221,8 @@ lightGUI.addColor(lightColor, 'color')
 
 const light2 = new THREE.AmbientLight(0x101010);
 scene.add(light2);
+// DOM ////////////////////////////////////////////////////
+
 
 /**
  * Sizes
@@ -272,24 +276,44 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 }
 window.addEventListener('scroll', scrollMap);
 
+document.addEventListener('mousemove', onDocumentMouseMove);
+
+let mouseX = 0;
+let mouseY = 0;
+
+let targetX = 0;
+let targetY = 0;
+
+const windowHalfX = window.innerWidth / 2;
+const windowHalfY = window.innerHeight / 2;
+
+function onDocumentMouseMove (e) {
+    mouseX = (e.clientX - windowHalfX);
+    mouseY = (e.clientY - windowHalfY);
+}
 
 const clock = new THREE.Clock()
 
 const tick = () =>
 {
 
+    targetX = mouseX * .001
+    targetY = mouseY * .001
     const elapsedTime = clock.getElapsedTime()
 
     // Update objects
-
-    // plane.rotation.z = .5 * elapsedTime
-    // sphere.rotation.y = .5 * elapsedTime
-
+    
     // Update Orbital Controls
-    // controls.update()
+    controls.update()
     if(mixer && mixer2) {
         mixer.update(0.01)
         mixer2.update(0.01)
+        sphere.rotation.y = .5 * elapsedTime
+    
+        sphere.rotation.y += .45 * (targetX - sphere.rotation.y)
+        sphere.rotation.x += .05 * (targetY - sphere.rotation.x)
+        sphere.position.z += -.05 * (targetY - sphere.rotation.x)
+        cat.position.z += -.09 * (targetY - sphere.rotation.x)
         
         
     }
