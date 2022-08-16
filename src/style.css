@@ -7,28 +7,20 @@
 html,
 body
 {
-    height: 100vh;
+    height: 300vh;
     font-family: 'Poppins';
     /* background-image: url('/static/textures/background.jpg'); */
 }
 
 .webgl
 {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     outline: none;
 }
 
-section {
-    height: 20vh;
-}
-h2 {
-    height: 20vh;
-}
-h3 {
-    height: 20vh;
-}
+
 .logo {
     position: fixed;
     margin-left: 130px;
@@ -41,6 +33,12 @@ h3 {
     width: 104.9px;
     height: 23.4px;
 
+}
+
+.end {
+    position: relative;
+    margin-left: 330px;
+    margin-top: 330px;
 }
 
 .container {

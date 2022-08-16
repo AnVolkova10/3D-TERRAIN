@@ -48,7 +48,7 @@ gltfloader.load( 'objects/cat/scene.gltf', function ( gltf ) {
     actionIdle.play()
 
     cat.scale.set(.1,.1,.1)
-    cat.position.x = 0.137
+    cat.position.x = -0.26
     cat.position.y = 0.534
     cat.position.z = -1.1202
     cat.rotation.x = 0.4
@@ -92,6 +92,7 @@ let mixerJump2;
     const actionJump = mixerJump2.clipAction(clipJump)
     actionJump.play()
 
+    cat2.visible = false
     cat2.scale.set(.1,.1,.1)
     cat2.position.x = 0.7987
     cat2.position.y = 0.2693
@@ -143,9 +144,10 @@ gltfloader.load( 'objects/sphere/scene.gltf', function ( gltf ) {
    scene.add( gltf.scene );
    sphere = gltf.scene;
    
+   
    sphere.scale.set(.2,.2,.2)
    sphere.position.x = 0.9972
-   sphere.position.y = -0.1276
+   sphere.position.y = -0.01276
    sphere.position.z = 3
    sphere.rotation.x = 0.137
    sphere.rotation.y = 3
@@ -208,6 +210,7 @@ const material = new THREE.MeshStandardMaterial({
 const plane = new THREE.Mesh(geometry, material)
 scene.add(plane)
 
+plane.position.x = -0.5909
 plane.rotation.x = 181
 
 const planeGUI = gui.addFolder('Plane');
@@ -317,13 +320,14 @@ const skybox = skyboxLoader.load([
     ]);
     scene.background = skybox;
     
-    // ///////////////////// LIGHTS ///////////////////////////////
-    // Light 1 - Point
-    let color1 = 0xf587bb;
+// ///////////////////// LIGHTS ///////////////////////////////
+// Light 1 - Point
+let color1 = 0xf587bb;
 const pointLight = new THREE.PointLight(color1, 3)
 pointLight.position.x = .2
 pointLight.position.y = 10
 pointLight.position.z = 4.4
+pointLight.castShadow = true;
 scene.add(pointLight)
 
 const lightGUI = gui.addFolder('Point Light');
@@ -344,6 +348,7 @@ lightGUI.addColor(lightColor, 'color')
 
 // Light 2 - Ambient
 const light2 = new THREE.AmbientLight(0x101010);
+light2.castShadow = true;
 scene.add(light2);
 const light2GUI = gui.addFolder('Ambient Light');
 light2GUI.add(light2, 'visible')
@@ -375,9 +380,9 @@ window.addEventListener('resize', () =>
 // ///////////////////// CAMERA ///////////////////////////////
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 0
-camera.position.y = 0
-camera.position.z = -2
+camera.position.x = -0.0615
+camera.position.y = 1.7913
+camera.position.z = -1.5285
 
 scene.add(camera)
 
@@ -387,9 +392,27 @@ cameraGUI.add(camera.position, 'y').min(-3).max(3).step(0.00001)
 cameraGUI.add(camera.position, 'z').min(-10).max(10).step(0.00001)
 
 
+
 // Controls
- const controls = new OrbitControls(camera, canvas)
- controls.enableDamping = true
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true
+controls.minDistance = 1
+controls.maxDistance = 15
+controls.enablePan = false
+controls.maxPolarAngle = Math.PI / 2 - 0.05
+
+const keysPressed = {  }
+
+document.addEventListener('keydown', (event) => {
+    if (event.shiftKey && characterControls) {
+        characterControls.switchRunToggle()
+    } else {
+        keysPressed[event.key.toLowerCase()] = true
+    }
+}, false);
+document.addEventListener('keyup', (event) => {
+    keysPressed[event.key.toLowerCase()] = false
+}, false);
 
 // ///////////////////// RENDERER ///////////////////////////////
 const renderer = new THREE.WebGLRenderer({
@@ -398,6 +421,7 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.shadowMap.enabled = false
 
 // //////////////////// RAYCASTER /////////////////////////////
 
@@ -407,6 +431,7 @@ let objs = []
 scene.traverse((object)=> {
     if (object.isMesh)
         objs.push(object)
+        object.castShadow = true
 })
 //Raycasting Only genoshaLogo
 objs = [objs[1]]
@@ -447,7 +472,7 @@ const clock = new THREE.Clock()
 const tick = () =>
 {
 
-    // console.log(window.scrollY);
+    console.log(window.scrollY);
     targetX = mouseX * .001
     targetY = mouseY * .001
     const elapsedTime = clock.getElapsedTime()
@@ -459,7 +484,7 @@ const tick = () =>
     //mouse in
     for(const intersect of intersects){
         intersect.object.scale.set(1.1,1.1)
-        totem.rotation.x = .5 * elapsedTime
+        totem.rotation.y += .005 * elapsedTime
     }
 
     //mouse out
@@ -474,31 +499,27 @@ const tick = () =>
     controls.update()
 
     // Update objects
-    if(mixerWalk && mixerScratch2 && window.scrollY >= 0) {
-        mixerWalk.update(0.01)
-        particlesMesh.rotation.x = mouseY *(elapsedTime * 0.00001)
-        particlesMesh.rotation.y = mouseX *(elapsedTime * 0.00001)
-        particlesMesh.rotation.y = .05 * elapsedTime
+     if (window.scrollY > 0 && window.scrollY <= 93){
+        city.position.x = 3 - (window.scrollY* 0.046)
+     
+    } else if (window.scrollY >= 93 && window.scrollY <= 224){
+        city.position.y = -1.78 + (window.scrollY* 0.0045)
+        city.position.z = 3 - (window.scrollY* 0.003)
         
+    } else if (window.scrollY >= 224 && window.scrollY <= 460){
+        city.rotation.x = 0.137 + (window.scrollY* 0.0009)
         
-        sphere.rotation.y = .5 * elapsedTime
-        sphere.rotation.x += .05 * (targetY - sphere.rotation.x)
-        sphere.rotation.y += .45 * (targetX - sphere.rotation.y)
-        sphere.position.z += -.05 * (targetY - sphere.rotation.x)
-        
-        cat.position.z += -.09 * (targetY - sphere.rotation.x)
+    } 
 
-        if (cat.position.z >= -0.3){
-            mixerScratch2.update(0.01)
-            totem.rotation.y += -.05
-            particles.rotation.z += -0.006
-            mixerIdle.update(0.01)
-        } else if (cat.position.z >= -1.5) {
-            mixerIdle2.update(0.01)
-        } else {
-            mixerJump2.update(0.01)
-        }  
+    if (mixerIdle && window.scrollY == 0) {
+        mixerIdle.update(0.01)
+    } else if (mixerWalk && window.scrollY < 360) {
+        mixerWalk.update(0.01)
+        cat.position.z = -1.1202 + (window.scrollY* 0.009)
+        cat.position.y = 0.534 - (window.scrollY* 0.0035)
+        
     }
+    
     
     // Render
     renderer.render(scene, camera)
