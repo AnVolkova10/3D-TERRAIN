@@ -10,6 +10,7 @@ const loader = new THREE.TextureLoader()
 const texture = loader.load('/textures/wireframe2.jpg')
 const height = loader.load('/textures/height.png')
 const alpha = loader.load('/textures/alpha.jpg')
+const o = loader.load('/textures/o.png')
 
 
 const gltfloader = new GLTFLoader();
@@ -208,6 +209,7 @@ planeGUI.add(plane.rotation, 'y').min(-3).max(3).step(0.00001)
 planeGUI.add(plane.position, 'x').min(-3).max(3).step(0.00001)
 planeGUI.add(plane.position, 'y').min(-3).max(3).step(0.00001)
 
+
 // GENOSHA LOGO
 const geometry2 = new THREE.PlaneBufferGeometry(1.089, 0.234)
 
@@ -233,10 +235,72 @@ genoshaLogoGUI.add(genoshaLogo.position, 'z').min(-3).max(3).step(0.00001)
 genoshaLogoGUI.add(genoshaLogo.rotation, 'x').min(-3).max(3).step(0.00001)
 genoshaLogoGUI.add(genoshaLogo.rotation, 'y').min(-3).max(3).step(0.00001)
 
+// PARTICLE
+const geometry3 = new THREE.TorusGeometry(.7,.2, 16, 100)
+
+const material3 = new THREE.PointsMaterial({    
+    transparent: true,
+    size: 0.005
+})
+
+const particles = new THREE.Points(geometry3, material3)
+
+particles.position.x = 0.2031
+particles.position.y = 0.2693
+particles.position.z = 0.4992
+particles.rotation.x = -2.6
+particles.visible = false
+scene.add(particles)
+
+
+
+const particlesGUI = gui.addFolder('Particles');
+particlesGUI.add(particles, 'visible')
+particlesGUI.add(particles.position, 'x').min(-3).max(3).step(0.00001)
+particlesGUI.add(particles.position, 'y').min(-3).max(3).step(0.00001)
+particlesGUI.add(particles.position, 'z').min(-3).max(10).step(0.00001)
+particlesGUI.add(particles.rotation, 'x').min(-3).max(3).step(0.00001)
+particlesGUI.add(particles.rotation, 'y').min(-3).max(3).step(0.00001)
+particlesGUI.add(particles.rotation, 'z').min(-3).max(3).step(0.00001)
+
+// PARTICLES
+const particlesGeometry = new THREE.BufferGeometry;
+const particlesCount = 5000;
+
+const posArray = new Float32Array(particlesCount * 3)
+for (let i = 0; i < particlesCount*3; i++) {
+    posArray[i] = (Math.random() - .5)*5
+    
+}
+
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3))
+
+const particlesMaterial = new THREE.PointsMaterial({    
+    size: 0.010,
+    map: o,
+    transparent: true
+})
+
+const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial)
+particlesMesh.visible = false
+scene.add(particlesMesh)
+
+
+const particles2GUI = gui.addFolder('Particles 2');
+particles2GUI.add(particlesMesh, 'visible')
+particles2GUI.add(particlesMesh.position, 'x').min(-3).max(3).step(0.00001)
+particles2GUI.add(particlesMesh.position, 'y').min(-3).max(3).step(0.00001)
+particles2GUI.add(particlesMesh.position, 'z').min(-3).max(10).step(0.00001)
+particles2GUI.add(particlesMesh.rotation, 'x').min(-3).max(3).step(0.00001)
+particles2GUI.add(particlesMesh.rotation, 'y').min(-3).max(3).step(0.00001)
+particles2GUI.add(particlesMesh.rotation, 'z').min(-3).max(3).step(0.00001)
+
+
+
 // SKYBOX
 const skyboxLoader = new THREE.CubeTextureLoader();
-    const skybox = skyboxLoader.load([
-        '/textures/right.png',
+const skybox = skyboxLoader.load([
+    '/textures/right.png',
         '/textures/left.png',
         '/textures/top.png',
         '/textures/bottom.png',
@@ -244,10 +308,10 @@ const skyboxLoader = new THREE.CubeTextureLoader();
         '/textures/back.png',
     ]);
     scene.background = skybox;
-
-// ///////////////////// LIGHTS ///////////////////////////////
-// Light 1 - Point
-let color1 = 0xf587bb;
+    
+    // ///////////////////// LIGHTS ///////////////////////////////
+    // Light 1 - Point
+    let color1 = 0xf587bb;
 const pointLight = new THREE.PointLight(color1, 3)
 pointLight.position.x = .2
 pointLight.position.y = 10
@@ -387,12 +451,14 @@ const tick = () =>
     //mouse in
     for(const intersect of intersects){
         intersect.object.scale.set(1.1,1.1)
+        totem.rotation.x = .5 * elapsedTime
     }
 
     //mouse out
     for (const object of objs) {
         if (!intersects.find(intersect=> intersect.object === object)) {
             object.scale.set(1,1)
+         
         }
     }
     
@@ -403,7 +469,9 @@ const tick = () =>
     if(mixerWalk && mixerScratch2 && window.scrollY >= 0) {
         mixerWalk.update(0.01)
         sphere.rotation.y = .5 * elapsedTime
-        
+        particlesMesh.rotation.x = mouseY *(elapsedTime * 0.0001)
+        particlesMesh.rotation.y = mouseX *(elapsedTime * 0.0001)
+
         sphere.rotation.y += .45 * (targetX - sphere.rotation.y)
         sphere.rotation.x += .05 * (targetY - sphere.rotation.x)
         sphere.position.z += -.05 * (targetY - sphere.rotation.x)
@@ -412,6 +480,7 @@ const tick = () =>
         if (cat.position.z >= -0.3){
             mixerScratch2.update(0.01)
             totem.rotation.y += -.05
+            particles.rotation.z += -0.006
             mixerIdle.update(0.01)
         } else if (cat.position.z >= -1.5) {
             mixerIdle2.update(0.01)
