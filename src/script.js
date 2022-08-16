@@ -4,6 +4,7 @@ import * as dat from 'dat.gui'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TextureLoader } from 'three';
+import gsap from 'gsap'
 
 // ///////////////////// LOADERS ///////////////////////////////
 const loader = new THREE.TextureLoader()
@@ -20,6 +21,9 @@ const gui = new dat.GUI()
 const canvas = document.querySelector('canvas.webgl')
 
 const scene = new THREE.Scene()
+
+// ////////////////////// GSAP /////////////////////////////////
+let tl = gsap.timeline()
 
 // ///////////////////// OBJECTS ///////////////////////////////
 
@@ -145,6 +149,10 @@ gltfloader.load( 'objects/sphere/scene.gltf', function ( gltf ) {
    sphere.position.z = 3
    sphere.rotation.x = 0.137
    sphere.rotation.y = 3
+
+   // pruebas de timeline
+   tl.to(sphere.position, {x: -2, duration: 3})
+   tl.to(sphere.position, {x: 0.9, duration: 3})
    
    const sphereGUI = gui.addFolder('Sphere');
    sphereGUI.add(sphere, 'visible')
@@ -263,7 +271,7 @@ particlesGUI.add(particles.rotation, 'x').min(-3).max(3).step(0.00001)
 particlesGUI.add(particles.rotation, 'y').min(-3).max(3).step(0.00001)
 particlesGUI.add(particles.rotation, 'z').min(-3).max(3).step(0.00001)
 
-// PARTICLES
+// GENOSHA PARTICLES
 const particlesGeometry = new THREE.BufferGeometry;
 const particlesCount = 5000;
 
@@ -468,15 +476,18 @@ const tick = () =>
     // Update objects
     if(mixerWalk && mixerScratch2 && window.scrollY >= 0) {
         mixerWalk.update(0.01)
-        sphere.rotation.y = .5 * elapsedTime
-        particlesMesh.rotation.x = mouseY *(elapsedTime * 0.0001)
-        particlesMesh.rotation.y = mouseX *(elapsedTime * 0.0001)
-
-        sphere.rotation.y += .45 * (targetX - sphere.rotation.y)
-        sphere.rotation.x += .05 * (targetY - sphere.rotation.x)
-        sphere.position.z += -.05 * (targetY - sphere.rotation.x)
-        cat.position.z += -.09 * (targetY - sphere.rotation.x)
+        particlesMesh.rotation.x = mouseY *(elapsedTime * 0.00001)
+        particlesMesh.rotation.y = mouseX *(elapsedTime * 0.00001)
+        particlesMesh.rotation.y = .05 * elapsedTime
         
+        
+        sphere.rotation.y = .5 * elapsedTime
+        sphere.rotation.x += .05 * (targetY - sphere.rotation.x)
+        sphere.rotation.y += .45 * (targetX - sphere.rotation.y)
+        sphere.position.z += -.05 * (targetY - sphere.rotation.x)
+        
+        cat.position.z += -.09 * (targetY - sphere.rotation.x)
+
         if (cat.position.z >= -0.3){
             mixerScratch2.update(0.01)
             totem.rotation.y += -.05
