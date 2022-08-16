@@ -336,6 +336,8 @@ scene.traverse((object)=> {
     if (object.isMesh)
         objs.push(object)
 })
+//Raycasting Only genoshaLogo
+objs = [objs[1]]
 
 
 // ///////////////////// ANIMATE ///////////////////////////////
