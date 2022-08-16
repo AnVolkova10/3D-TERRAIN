@@ -9,7 +9,7 @@ body
 {
     height: 100vh;
     font-family: 'Poppins';
-    background-image: url('/static/textures/background.jpg');
+    /* background-image: url('/static/textures/background.jpg'); */
 }
 
 .webgl
@@ -21,5 +21,29 @@ body
 }
 
 section {
+    height: 20vh;
+}
+h2 {
+    height: 20vh;
+}
+h3 {
+    height: 20vh;
+}
+.logo {
+    position: fixed;
+    margin-left: 130px;
+    margin-top: 130px;
+    z-index: 99;
+    background-image: url('/static/images/genosha-logo.png');
+    background-color: rgb(60, 61, 61);
+    background-size: contain;
+    cursor: pointer;
+    width: 104.9px;
+    height: 23.4px;
+
+}
+
+.container {
     height: 100vh;
+ 
 }

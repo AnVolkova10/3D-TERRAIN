@@ -1,8 +1,9 @@
 import './style.css'
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { TextureLoader } from 'three';
 
 // ///////////////////// LOADERS ///////////////////////////////
 const loader = new THREE.TextureLoader()
@@ -10,9 +11,8 @@ const texture = loader.load('/textures/wireframe2.jpg')
 const height = loader.load('/textures/height.png')
 const alpha = loader.load('/textures/alpha.jpg')
 
+
 const gltfloader = new GLTFLoader();
-
-
 
 const gui = new dat.GUI()
 
@@ -23,23 +23,24 @@ const scene = new THREE.Scene()
 // ///////////////////// OBJECTS ///////////////////////////////
 
 // CAT
-let mixer;
-let mixer3;
+let mixerWalk;
+let mixerIdle;
 let cat;
- gltfloader.load( '/cat/scene.gltf', function ( gltf ) {
- 	scene.add( gltf.scene );
+gltfloader.load( 'objects/cat/scene.gltf', function ( gltf ) {
+    scene.add( gltf.scene );
     cat = gltf.scene;
-    // Animation - Walk
-    mixer = new THREE.AnimationMixer(cat);
-    mixer3 = new THREE.AnimationMixer(cat);
     const clips = gltf.animations;
-    const clip = THREE.AnimationClip.findByName(clips, 'A_walk')
-    const clip2 = THREE.AnimationClip.findByName(clips, 'A_idle')
-    const action = mixer.clipAction(clip)
-    const action2 = mixer3.clipAction(clip2)
-    action.play()
-    action2.play()
 
+    // Animation - Walk
+    mixerWalk = new THREE.AnimationMixer(cat);
+    const clipWalk = THREE.AnimationClip.findByName(clips, 'A_walk')
+    const actionWalk = mixerWalk.clipAction(clipWalk)
+    actionWalk.play()
+    // Animation - Idle
+    mixerIdle = new THREE.AnimationMixer(cat);
+    const clipIdle = THREE.AnimationClip.findByName(clips, 'A_idle')
+    const actionIdle = mixerIdle.clipAction(clipIdle)
+    actionIdle.play()
 
     cat.scale.set(.1,.1,.1)
     cat.position.x = 0.137
@@ -49,6 +50,7 @@ let cat;
     cat.rotation.y =-0.127
     
     const catGUI = gui.addFolder('Cat');
+    catGUI.add(cat, 'visible')
     catGUI.add(cat.position, 'x').min(-3).max(3).step(0.00001)
     catGUI.add(cat.position, 'y').min(-3).max(3).step(0.00001)
     catGUI.add(cat.position, 'z').min(-3).max(3).step(0.00001)
@@ -56,33 +58,34 @@ let cat;
     catGUI.add(cat.rotation, 'y').min(-3).max(3).step(0.00001)
     
 
- }, undefined, function ( error ) {
+}, undefined, function ( error ) {
  	console.error( error );
- } );
+} );
 
 // DARK CAT
-
-let mixer2;
-let mixer4;
-let mixer5;
 let cat2;
- gltfloader.load( '/dark_cat/scene.gltf', function ( gltf ) {
+let mixerScratch2;
+let mixerIdle2;
+let mixerJump2;
+ gltfloader.load( 'objects/dark_cat/scene.gltf', function ( gltf ) {
  	scene.add( gltf.scene );
     cat2 = gltf.scene;
-    // Animation - Walk
-    mixer2 = new THREE.AnimationMixer(cat2);
-    mixer4 = new THREE.AnimationMixer(cat2);
-    mixer5 = new THREE.AnimationMixer(cat2);
     const clips = gltf.animations;
-    const clip = THREE.AnimationClip.findByName(clips, 'Cat_Idle|Scratch')
-    const clip4= THREE.AnimationClip.findByName(clips, 'Cat_Idle|Idle')
-    const clip5= THREE.AnimationClip.findByName(clips, 'Cat_Idle|Jump')
-    const action = mixer2.clipAction(clip)
-    const action4 = mixer4.clipAction(clip4)
-    const action5 = mixer5.clipAction(clip5)
-    action.play()
-    action4.play()
-    action5.play()
+    // Animation - Scratch
+    mixerScratch2 = new THREE.AnimationMixer(cat2);
+    const clipScratch = THREE.AnimationClip.findByName(clips, 'Cat_Idle|Scratch')
+    const actionScratch = mixerScratch2.clipAction(clipScratch)
+    actionScratch.play()
+    // Animation - Idle
+    mixerIdle2 = new THREE.AnimationMixer(cat2);
+    const clipIdle= THREE.AnimationClip.findByName(clips, 'Cat_Idle|Idle')
+    const actionIdle = mixerIdle2.clipAction(clipIdle)
+    actionIdle.play()
+    // Animation - Jump
+    mixerJump2 = new THREE.AnimationMixer(cat2);
+    const clipJump= THREE.AnimationClip.findByName(clips, 'Cat_Idle|Jump')
+    const actionJump = mixerJump2.clipAction(clipJump)
+    actionJump.play()
 
     cat2.scale.set(.1,.1,.1)
     cat2.position.x = 0.7987
@@ -92,6 +95,7 @@ let cat2;
     cat2.rotation.y =-1.9895
     
     const cat2GUI = gui.addFolder('Dark Cat');
+    cat2GUI.add(cat2, 'visible')
     cat2GUI.add(cat2.position, 'x').min(-3).max(3).step(0.00001)
     cat2GUI.add(cat2.position, 'y').min(-3).max(3).step(0.00001)
     cat2GUI.add(cat2.position, 'z').min(-3).max(3).step(0.00001)
@@ -99,14 +103,14 @@ let cat2;
     cat2GUI.add(cat2.rotation, 'y').min(-3).max(3).step(0.00001)
     
 
- }, undefined, function ( error ) {
+}, undefined, function ( error ) {
  	console.error( error );
- } );
+} );
 
 // TOTEM
 let totem;
-gltfloader.load( '/totem/scene.gltf', function ( gltf ) {
-    scene.add( gltf.scene );
+gltfloader.load( 'objects/totem/scene.gltf', function ( gltf ) {
+   scene.add( gltf.scene );
    totem = gltf.scene;
    
    totem.scale.set(.2,.2,.2)
@@ -117,21 +121,21 @@ gltfloader.load( '/totem/scene.gltf', function ( gltf ) {
    totem.rotation.y = 3
    
    const totemGUI = gui.addFolder('Totem');
+   totemGUI.add(totem, 'visible')
    totemGUI.add(totem.position, 'x').min(-3).max(3).step(0.00001)
    totemGUI.add(totem.position, 'y').min(-3).max(3).step(0.00001)
    totemGUI.add(totem.position, 'z').min(-3).max(3).step(0.00001)
    totemGUI.add(totem.rotation, 'x').min(-3).max(3).step(0.00001)
    totemGUI.add(totem.rotation, 'y').min(-3).max(3).step(0.00001)
    
-
 }, undefined, function ( error ) {
     console.error( error );
 } );
 
 // SPHERE
 let sphere;
-gltfloader.load( '/sphere/scene.gltf', function ( gltf ) {
-    scene.add( gltf.scene );
+gltfloader.load( 'objects/sphere/scene.gltf', function ( gltf ) {
+   scene.add( gltf.scene );
    sphere = gltf.scene;
    
    sphere.scale.set(.2,.2,.2)
@@ -142,21 +146,21 @@ gltfloader.load( '/sphere/scene.gltf', function ( gltf ) {
    sphere.rotation.y = 3
    
    const sphereGUI = gui.addFolder('Sphere');
+   sphereGUI.add(sphere, 'visible')
    sphereGUI.add(sphere.position, 'x').min(-3).max(3).step(0.00001)
    sphereGUI.add(sphere.position, 'y').min(-3).max(3).step(0.00001)
    sphereGUI.add(sphere.position, 'z').min(-3).max(3).step(0.00001)
    sphereGUI.add(sphere.rotation, 'x').min(-3).max(3).step(0.00001)
    sphereGUI.add(sphere.rotation, 'y').min(-3).max(3).step(0.00001)
    
-
 }, undefined, function ( error ) {
     console.error( error );
 } );
 
 // CITY
 let city;
-gltfloader.load( '/city/scene.gltf', function ( gltf ) {
-    scene.add( gltf.scene );
+gltfloader.load( 'objects/city/scene.gltf', function ( gltf ) {
+   scene.add(gltf.scene);
    city = gltf.scene;
    
    city.scale.set(.0001,.0001,.0001)
@@ -167,6 +171,7 @@ gltfloader.load( '/city/scene.gltf', function ( gltf ) {
    city.rotation.y = 3
    
    const cityGUI = gui.addFolder('City');
+   cityGUI.add(city, 'visible')
    cityGUI.add(city.position, 'x').min(-3).max(3).step(0.00001)
    cityGUI.add(city.position, 'y').min(-3).max(3).step(0.00001)
    cityGUI.add(city.position, 'z').min(-3).max(3).step(0.00001)
@@ -193,13 +198,40 @@ const material = new THREE.MeshStandardMaterial({
 
 const plane = new THREE.Mesh(geometry, material)
 scene.add(plane)
+
 plane.rotation.x = 181
 
 const planeGUI = gui.addFolder('Plane');
+planeGUI.add(plane, 'visible')
 planeGUI.add(plane.rotation, 'x').min(-3).max(3).step(0.00001)
 planeGUI.add(plane.rotation, 'y').min(-3).max(3).step(0.00001)
 planeGUI.add(plane.position, 'x').min(-3).max(3).step(0.00001)
 planeGUI.add(plane.position, 'y').min(-3).max(3).step(0.00001)
+
+// GENOSHA LOGO
+const geometry2 = new THREE.PlaneBufferGeometry(1.089, 0.234)
+
+const material2 = new THREE.MeshBasicMaterial({
+    map: loader.load('/images/genosha-logo.png'),
+    transparent: true
+})
+
+const genoshaLogo = new THREE.Mesh(geometry2, material2)
+
+genoshaLogo.rotation.y = -2.973
+genoshaLogo.position.x = 0.798
+genoshaLogo.position.y = -0.193
+genoshaLogo.position.z = 2.386
+
+scene.add(genoshaLogo)
+
+const genoshaLogoGUI = gui.addFolder('Genosha Logo');
+genoshaLogoGUI.add(genoshaLogo, 'visible')
+genoshaLogoGUI.add(genoshaLogo.position, 'x').min(-3).max(3).step(0.00001)
+genoshaLogoGUI.add(genoshaLogo.position, 'y').min(-3).max(3).step(0.00001)
+genoshaLogoGUI.add(genoshaLogo.position, 'z').min(-3).max(3).step(0.00001)
+genoshaLogoGUI.add(genoshaLogo.rotation, 'x').min(-3).max(3).step(0.00001)
+genoshaLogoGUI.add(genoshaLogo.rotation, 'y').min(-3).max(3).step(0.00001)
 
 // SKYBOX
 const skyboxLoader = new THREE.CubeTextureLoader();
@@ -214,20 +246,23 @@ const skyboxLoader = new THREE.CubeTextureLoader();
     scene.background = skybox;
 
 // ///////////////////// LIGHTS ///////////////////////////////
-const pointLight = new THREE.PointLight(0xf587bb, 3)
+// Light 1 - Point
+let color1 = 0xf587bb;
+const pointLight = new THREE.PointLight(color1, 3)
 pointLight.position.x = .2
 pointLight.position.y = 10
 pointLight.position.z = 4.4
 scene.add(pointLight)
 
-const lightGUI = gui.addFolder('Light');
+const lightGUI = gui.addFolder('Point Light');
+lightGUI.add(pointLight, 'visible')
 lightGUI.add(pointLight.position, 'y').min(-3).max(3).step(0.01)
 lightGUI.add(pointLight.position, 'x').min(-6).max(10).step(0.01)
 lightGUI.add(pointLight.position, 'z').min(-3).max(3).step(0.01)
 lightGUI.add(pointLight, 'intensity').min(0).max(10).step(0.01)
 
 const lightColor = {
-    color: 0xf587bb
+    color: color1
 }
 
 lightGUI.addColor(lightColor, 'color')
@@ -235,14 +270,16 @@ lightGUI.addColor(lightColor, 'color')
         pointLight.color.set(lightColor.color)
     })
 
+// Light 2 - Ambient
 const light2 = new THREE.AmbientLight(0x101010);
 scene.add(light2);
-// DOM ////////////////////////////////////////////////////
+const light2GUI = gui.addFolder('Ambient Light');
+light2GUI.add(light2, 'visible')
+
+// ///////////////////// DOM ///////////////////////////////
 
 
-/**
- * Sizes
- */
+// ///////////////////// SIZES ///////////////////////////////
 const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
@@ -265,13 +302,18 @@ window.addEventListener('resize', () =>
 
 // ///////////////////// CAMERA ///////////////////////////////
 // Base camera
-    const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-    camera.position.x = 0
-    camera.position.y = 0
-    camera.position.z = -2
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+camera.position.x = 0
+camera.position.y = 0
+camera.position.z = -2
 
-        
-    scene.add(camera)
+scene.add(camera)
+
+const cameraGUI = gui.addFolder('Camera');
+cameraGUI.add(camera.position, 'x').min(-3).max(3).step(0.00001)
+cameraGUI.add(camera.position, 'y').min(-3).max(3).step(0.00001)
+cameraGUI.add(camera.position, 'z').min(-10).max(10).step(0.00001)
+
 
 // Controls
  const controls = new OrbitControls(camera, canvas)
@@ -285,12 +327,24 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+// //////////////////// RAYCASTER /////////////////////////////
+
+const raycaster = new THREE.Raycaster()
+
+let objs = []
+scene.traverse((object)=> {
+    if (object.isMesh)
+        objs.push(object)
+})
+
+
 // ///////////////////// ANIMATE ///////////////////////////////
- const scrollMap = (event) => {
-    camera.position.z = window.scrollY / 20
+
+// const scrollMap = (event) => {
+//     camera.position.z = window.scrollY / 20
     
-}
-window.addEventListener('scroll', scrollMap);
+// }
+// window.addEventListener('scroll', scrollMap);
 
 document.addEventListener('mousemove', onDocumentMouseMove);
 
@@ -308,21 +362,44 @@ function onDocumentMouseMove (e) {
     mouseY = (e.clientY - windowHalfY);
 }
 
+const mouse = new THREE.Vector2()
+window.addEventListener('mousemove', (event) => {
+    mouse.x = event.clientX /sizes.width * 2-1
+    mouse.y = -(event.clientY /sizes.height) * 2+1
+})
+
 const clock = new THREE.Clock()
 
 const tick = () =>
 {
 
+    // console.log(window.scrollY);
     targetX = mouseX * .001
     targetY = mouseY * .001
     const elapsedTime = clock.getElapsedTime()
 
-    // Update objects
+    // Raycaster
+    raycaster.setFromCamera(mouse, camera)
+    const intersects = raycaster.intersectObjects(objs)
+    
+    //mouse in
+    for(const intersect of intersects){
+        intersect.object.scale.set(1.1,1.1)
+    }
+
+    //mouse out
+    for (const object of objs) {
+        if (!intersects.find(intersect=> intersect.object === object)) {
+            object.scale.set(1,1)
+        }
+    }
     
     // Update Orbital Controls
     controls.update()
-    if(mixer && mixer2) {
-        mixer.update(0.01)
+
+    // Update objects
+    if(mixerWalk && mixerScratch2 && window.scrollY >= 0) {
+        mixerWalk.update(0.01)
         sphere.rotation.y = .5 * elapsedTime
         
         sphere.rotation.y += .45 * (targetX - sphere.rotation.y)
@@ -331,18 +408,16 @@ const tick = () =>
         cat.position.z += -.09 * (targetY - sphere.rotation.x)
         
         if (cat.position.z >= -0.3){
-            mixer2.update(0.01)
+            mixerScratch2.update(0.01)
             totem.rotation.y += -.05
-            mixer3.update(0.01)
+            mixerIdle.update(0.01)
         } else if (cat.position.z >= -1.5) {
-            mixer4.update(0.01)
+            mixerIdle2.update(0.01)
         } else {
-            mixer5.update(0.01)
-        }
-
-        
-        
+            mixerJump2.update(0.01)
+        }  
     }
+    
     // Render
     renderer.render(scene, camera)
 
